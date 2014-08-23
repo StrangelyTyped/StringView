@@ -1,0 +1,95 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/cabox/.nvm/versions/node/v5.2.0/bin/node',
+1 verbose cli   '/home/cabox/.nvm/versions/node/v5.2.0/bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@3.5.1
+3 info using node@v5.2.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/home/cabox/workspace/StringViewNew',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /home/cabox/.npm/stringview/2.0.0/package.tgz not in flight; packing
+9 info lifecycle stringview@2.0.0~prepublish: stringview@2.0.0
+10 silly lifecycle stringview@2.0.0~prepublish: no script for prepublish, continuing
+11 verbose tar pack [ '/home/cabox/.npm/stringview/2.0.0/package.tgz',
+11 verbose tar pack   '/home/cabox/workspace/StringViewNew' ]
+12 verbose tarball /home/cabox/.npm/stringview/2.0.0/package.tgz
+13 verbose folder /home/cabox/workspace/StringViewNew
+14 verbose addLocalTarball adding from inside cache /home/cabox/.npm/stringview/2.0.0/package.tgz
+15 silly cache afterAdd stringview@2.0.0
+16 verbose afterAdd /home/cabox/.npm/stringview/2.0.0/package/package.json not in flight; writing
+17 verbose afterAdd /home/cabox/.npm/stringview/2.0.0/package/package.json written
+18 silly publish { name: 'stringview',
+18 silly publish   version: '2.0.0',
+18 silly publish   description: 'DataView extension for reading/writing strings',
+18 silly publish   main: 'StringView.js',
+18 silly publish   scripts: { test: 'nodeunit tests.js' },
+18 silly publish   repository:
+18 silly publish    { type: 'git',
+18 silly publish      url: 'git+https://github.com/StrangelyTyped/StringView.git' },
+18 silly publish   author: { name: 'StrangelyTyped' },
+18 silly publish   license: 'BSD',
+18 silly publish   bugs: { url: 'https://github.com/StrangelyTyped/StringView/issues' },
+18 silly publish   homepage: 'https://github.com/StrangelyTyped/StringView',
+18 silly publish   devDependencies: { nodeunit: '~0.9.0' },
+18 silly publish   readme: 'StringView\n==========\n\n![Codeship Build Status Badge](https://codeship.com/projects/113ce100-93c8-0133-0238-6235332b63f7/status?branch=master)\n\nJavaScript DataView extension for reading/writing strings.\n\n## API\nAdds the following methods to DataView:\n\n```javascript\nvar dataview = new DataView(...);\ndataview.getString(byteOffset, optional byteLength, optional encoding)\ndataview.getStringData(byteOffset, optional byteLength, optional encoding)\ndataview.getStringNT(byteOffset, optional encoding)\ndataview.getStringDataNT(byteOffset, optional encoding)\ndataview.setString(byteOffset, value, optional encoding)\ndataview.setStringNT(byteOffset, value, optional encoding)\ndataview.stringByteLength(str, optional encoding) // instance method\nDataView.stringByteLength(str, optional encoding) // Static method\nDataView.addStringCodec(encoding, decoder, encoder) //Static method\n```\nAll methods assume a default encoding of UTF-8 unless an encoding is specified.\n\n### Instance Methods\n####`dataview.getString(byteOffset, optional byteLength, optional encoding)`\nReturns the string represented by this DataView\'s buffer starting at `byteOffset`. The string will be made from `byteLength` bytes (defaulting to the length of the buffer minus `byteOffset` if not specified) interpreted using the specified encoding. \n\nThis method will throw an Error if the provided `byteOffset` and `byteLength` would cause access past the end of the buffer.\n\n####`dataview.getStringData(byteOffset, optional byteLength, optional encoding)`\nFunctionally identical to the method `getString`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string, and the `byteLength` property indicates the number of bytes that were consumed while reading it. Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.\n\n#### `dataview.getStringNT(byteOffset, optional encoding)`\nReturns the string represented by this DataView\'s buffer starting at `byteOffset` and reading until a null byte or the end of the buffer is encountered, interpreted using the specified encoding.\n\n#### `dataview.getStringDataNT(byteOffset, optional encoding)`\nFunctionally identical to the method `getStringNT`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string (**not including** null byte), and the `byteLength` property indicates the number of bytes that were consumed while reading it (**including** the null byte). Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.\n\n#### `dataview.setString(byteOffset, value, optional encoding)`\nWrites the provided value into this DataView\'s buffer starting at `byteOffset`. The string will be encoded using the specified encoding. This function will return the number of bytes written to the string, which may be less than the number required to completely represent the string if `byteOffset` is too close to the end of the buffer. Note that this function may write a partial character at the end of the string in the case of truncation.\n\n#### `dataview.setStringNT(byteOffset, value, encoding)`\nWrites the provided value into this DataView\'s buffer starting at `byteOffset`. The string will be encoded using the specified encoding and terminated with a null byte. This function will return the number of bytes written to the string, which may be less than the number required to completely represent the string if `byteOffset` is too close to the end of the buffer. If the string was truncated it will still be terminated by a null byte. The null byte will be included the the return value. Note that this function may write a partial character at the end of the string in the case of truncation.\n\n#### `dataview.stringByteLength(str, optional encoding)`\nCalculates and returns the number of bytes required to completely represent the provided string using the specified encoding.\n\n### Static Methods\n#### `DataView.stringByteLength(str, optional encoding)`\nCalculates and returns the number of bytes required to completely represent the provided string using the specified encoding.\n\n#### `DataView.addStringCodec(encoding, decoder, encoder)`\nAdds support for encoding and decoding the specified encoding to all DataView instances. The `decoder` and `encoder` arguments should be functions adhering to the following specification. \n\n##### Decoder\nThe decoder function should accept the following arguments:\n\n* `buf` - the DataView object to operate on\n* `byteOffset` - the offset in the data buffer to begin reading\n* `bytesToRead` - the number of bytes to read, or undefined for null terminated strings.\n\nThe decoder function should return an object with two properties - `str` being the decoded string, and `byteLength` representing the number of bytes consumed in reading the string.\n\n##### Encoder\nThe encoder function should accept a single argument - the string to encode, and must return a JavaScript array of unsigned byte values representing that string in the specified encoding.\n\nIf `encoding` is provided to `getString` then `byteLength` must also be provided.\nThe `byteLength` defaults to the length of the buffer minus the `byteOffset` if not provided.\n\n## Supported Encodings\nThe following encodings are supported by default:\n\n* UTF-8\n* ASCII\n\nSupport for additional encodings can be added using the `DataView.addStringCodec` method.\n\n## Compatibility\nThis script is suitable for running in any JavaScript environment (browser / Node.JS / etc) which supports DataView.\n\n## Invalid UTF-8 Characters\nAny invalid UTF-8 characters encountered are replaced with one or more U+FFFD characters (the \'replacement character\').\n\n## Examples\nPlease see tests.js for usage examples.\n\n## Tests\nTests are written using NodeUnit, you may need to `npm install -g nodeunit` in order to run the `npm test` command.\n',
+18 silly publish   readmeFilename: 'README.md',
+18 silly publish   _id: 'stringview@2.0.0',
+18 silly publish   _shasum: '57492eba0673f9d24c43b6f18a686730ceee4544',
+18 silly publish   _from: '.' }
+19 verbose getPublishConfig undefined
+20 silly mapToRegistry name stringview
+21 silly mapToRegistry using default registry
+22 silly mapToRegistry registry https://registry.npmjs.org/
+23 silly mapToRegistry uri https://registry.npmjs.org/stringview
+24 verbose publish registryBase https://registry.npmjs.org/
+25 silly publish uploading /home/cabox/.npm/stringview/2.0.0/package.tgz
+26 verbose request uri https://registry.npmjs.org/stringview
+27 verbose request sending authorization for write operation
+28 info attempt registry request try #1 at 5:39:40 PM
+29 verbose request using bearer token for auth
+30 verbose request id 2a7428b4a6291b2a
+31 http request PUT https://registry.npmjs.org/stringview
+32 http 403 https://registry.npmjs.org/stringview
+33 verbose headers { 'content-type': 'application/json',
+33 verbose headers   'cache-control': 'max-age=300',
+33 verbose headers   'content-length': '95',
+33 verbose headers   'accept-ranges': 'bytes',
+33 verbose headers   date: 'Sat, 02 Jan 2016 22:39:41 GMT',
+33 verbose headers   via: '1.1 varnish',
+33 verbose headers   connection: 'keep-alive',
+33 verbose headers   'x-served-by': 'cache-ord1733-ORD',
+33 verbose headers   'x-cache': 'MISS',
+33 verbose headers   'x-cache-hits': '0',
+33 verbose headers   'x-timer': 'S1451774380.541238,VS0,VE777' }
+34 verbose request invalidating /home/cabox/.npm/registry.npmjs.org/stringview on PUT
+35 error publish Failed PUT 403
+36 verbose stack Error: "You cannot publish over the previously published version 2.0.0." : stringview
+36 verbose stack     at makeError (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+36 verbose stack     at CachingRegistryClient.<anonymous> (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+36 verbose stack     at Request._callback (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+36 verbose stack     at Request.self.callback (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/request/request.js:198:22)
+36 verbose stack     at emitTwo (events.js:88:13)
+36 verbose stack     at Request.emit (events.js:173:7)
+36 verbose stack     at Request.<anonymous> (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/request/request.js:1082:10)
+36 verbose stack     at emitOne (events.js:83:20)
+36 verbose stack     at Request.emit (events.js:170:7)
+36 verbose stack     at IncomingMessage.<anonymous> (/home/cabox/.nvm/versions/node/v5.2.0/lib/node_modules/npm/node_modules/request/request.js:1009:12)
+37 verbose statusCode 403
+38 verbose pkgid stringview
+39 verbose cwd /home/cabox/workspace/StringViewNew
+40 error Linux 2.6.32-042stab112.15
+41 error argv "/home/cabox/.nvm/versions/node/v5.2.0/bin/node" "/home/cabox/.nvm/versions/node/v5.2.0/bin/npm" "publish"
+42 error node v5.2.0
+43 error npm  v3.5.1
+44 error code E403
+45 error "You cannot publish over the previously published version 2.0.0." : stringview
+46 error If you need help, you may report this error at:
+46 error     <https://github.com/npm/npm/issues>
+47 verbose exit [ 1, true ]

@@ -1,0 +1,27 @@
+{
+  "name": "stringview",
+  "main": "StringView.js",
+  "version": "1.0.1",
+  "homepage": "https://github.com/StrangelyTyped/StringView",
+  "authors": [
+    "StrangelyTyped"
+  ],
+  "description": "DataView extension for reading/writing strings",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "DataView",
+    "StringView",
+    "ArrayBuffer",
+    "String"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
