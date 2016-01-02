@@ -1,6 +1,7 @@
+"use strict";
 require("./StringView.js");
 
-var replacementChar = String.fromCharCode(0xFFFD);
+var replacementChar = 0xFFFD;
 
 var runBasicUtf8ReadTest = function(strOrBufferToTest, testString, test, offset){
 	offset = offset || 0;
@@ -70,7 +71,7 @@ module.exports.testLongBuffer = function(test){
 var testMalformedUtf8 = function(test, buf){
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
-	var testStr = String.fromCharCode.apply(String, [65, 66, 67, 32, 0xFFFD, 0xFFFD, 0xFFFD, 0xFFFD, 68, 69]);
+	var testStr = String.fromCharCode.apply(String, [65, 66, 67, 32, replacementChar, replacementChar, replacementChar, replacementChar, 68, 69]);
 	test.equal(view.getString(0, buf.length), testStr);
 };
 
@@ -125,6 +126,63 @@ module.exports.readAsciiNullTerm = function(test){
 	test.equal(view.getStringNT(0, "ASCII"), testStr);
 	test.done();
 };
+
+module.exports.readUTF8Data = function(test){
+	test.expect(2);
+	var testStr = "What? £45!";
+	var buf = new Buffer(Buffer.byteLength(testStr));
+	buf.fill(0);
+	buf.write(testStr, 0);
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	var retData = view.getStringData(0, buf.length);
+	test.equal(retData.str, testStr);
+	test.equal(retData.byteLength, buf.length);
+	test.done();
+};
+
+module.exports.readASCIIData = function(test){
+	test.expect(2);
+	var testStr = "What? $45!";
+	var buf = new Buffer(Buffer.byteLength(testStr, "ascii"));
+	buf.fill(0);
+	buf.write(testStr, 0, "ascii");
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	var retData = view.getStringData(0, buf.length, "ASCII");
+	test.equal(retData.str, testStr);
+	test.equal(retData.byteLength, buf.length);
+	test.done();
+};
+
+module.exports.readUTf8NullTermData = function(test){
+	test.expect(2);
+	var testStr = "What? £45!";
+	var buf = new Buffer(Buffer.byteLength(testStr) + 1);
+	buf.fill(0);
+	buf.write(testStr, 0);
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	var retData = view.getStringDataNT(0);
+	test.equal(retData.str, testStr);
+	test.equal(retData.byteLength, buf.length);
+	test.done();
+};
+
+module.exports.readAsciiNullTermData = function(test){
+	test.expect(2);
+	var testStr = "What? $45!";
+	var buf = new Buffer(Buffer.byteLength(testStr, "ascii") + 1);
+	buf.fill(0);
+	buf.write(testStr, 0, "ascii");
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	var retData = view.getStringDataNT(0, "ASCII");
+	test.equal(retData.str, testStr);
+	test.equal(retData.byteLength, buf.length);
+	test.done();
+};
+
 
 module.exports.byteLength = function(test){
 	var testStrs = ["Ascii String","What? £45! No, €45.","£ @ €"];

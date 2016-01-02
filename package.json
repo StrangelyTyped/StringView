@@ -1,6 +1,6 @@
 {
   "name": "stringview",
-  "version": "1.0.1",
+  "version": "2.0.1",
   "description": "DataView extension for reading/writing strings",
   "main": "StringView.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/StrangelyTyped/StringView",
   "devDependencies": {
-    "nodeunit": "^0.9.0"
+    "nodeunit": "~0.9.0"
   }
 }

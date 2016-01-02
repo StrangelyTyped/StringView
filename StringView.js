@@ -17,10 +17,10 @@
 			var i = 0;
 			while(true){
 				i++;
-				//
-				if(i == limits.length){
+				
+				if(i === limits.length){
 					console.error("UTF-8 Write - attempted to encode illegally high code point - " + charCode);
-					creatUTf8Char(replacementChar, arr);
+					createUtf8Char(replacementChar, arr);
 					return;
 				}
 				if(charCode <= limits[i]){
@@ -114,7 +114,7 @@
 				//0x3F is the mask to remove the continuation flag
 				charStruct.charVal |= (aByte & 0x3F);
 
-				if(i == 1){
+				if(i === 1){
 					var rshift = (8 - (numBytes + 1)) - 1;
 					if((charStruct.charVal >> rshift) === 0){
 						console.error("UTF-8 read - found overlong encoding");
@@ -156,12 +156,14 @@
  				}
  				str += String.fromCharCode(charStruct.charVal);
 			}
-			str.byteLength = readPos - byteOffset;
-			return str;
+			return {
+				str: str,
+				byteLength: (readPos - byteOffset)
+			};
 		},
 		"ASCII": function(buf, byteOffset, bytesToRead){
 			var str = "";
-			str.byteLength = 0;
+			var byteLength = 0;
 			byteOffset = byteOffset || 0;
 			var nullTerm = false;
 			if(typeof bytesToRead === "undefined"){
@@ -175,9 +177,12 @@
 					break;
 				}
 				str += String.fromCharCode(charCode);
-				str.byteLength++;
+				byteLength++;
 			}
-			return str;
+			return {
+				str: str, 
+				byteLength: byteLength + (nullTerm ? 1 : 0)
+			};
 		}
 	};
 
@@ -186,7 +191,7 @@
 			encoding = defaultEncoding;
 		}
 		if(!createString.hasOwnProperty(encoding)){
-			throw new Error("Unknown encoding '" + encoding + "'");
+			throw new Error("Unknown string encoding '" + encoding + "'");
 		}
 		return encoding;
 	};
@@ -195,16 +200,28 @@
 		encoding = checkEncoding(encoding);	
 		return createString[encoding](str).length;
 	};
+	
+	var getString = function(byteOffset, byteLength, encoding){
+		encoding = checkEncoding(encoding);
+		if(!byteLength){
+			byteLength = this.byteLength - byteOffset;
+		}
+		return readString[encoding](this, byteOffset, byteLength);
+	};
+	
+	var getStringNT = function(byteOffset, encoding){
+		encoding = checkEncoding(encoding);
+		return readString[encoding](this, byteOffset);
+	};
 
 	Object.defineProperties(DataView.prototype, {
 		getString: {
 			value: function(byteOffset, byteLength, encoding){
-				encoding = checkEncoding(encoding);
-				if(!byteLength){
-					byteLength = this.byteLength - byteOffset;
-				}
-				return readString[encoding](this, byteOffset, byteLength);
+				return getString.call(this, byteOffset, byteLength, encoding).str;
 			}
+		},
+		getStringData: {
+			value: getString
 		},
 		setString: {
 			value: function(byteOffset, value, encoding){
@@ -219,9 +236,11 @@
 		},
 		getStringNT: {
 			value: function(byteOffset, encoding){
-				encoding = checkEncoding(encoding);
-				return readString[encoding](this, byteOffset);
+				return getStringNT.call(this, byteOffset, encoding).str;
 			}
+		},
+		getStringDataNT: {
+			value: getStringNT
 		},
 		setStringNT: {
 			value: function(byteOffset, value, encoding){
