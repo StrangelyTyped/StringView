@@ -127,6 +127,31 @@ module.exports.readAsciiNullTerm = function(test){
 	test.done();
 };
 
+module.exports.readUTf8CustomTerm = function(test){
+	test.expect(1);
+	var testStr = "What?";
+	var buf = new Buffer(Buffer.byteLength(testStr) + 1);
+	buf.fill(0);
+	buf.write(testStr, 0);
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	test.equal(view.getStringNT(0,"UTF-8"," ".charCodeAt(0)), testStr);
+	test.done();
+};
+
+module.exports.readAsciiCustomTerm = function(test){
+	test.expect(1);
+	var testStr = "What?";
+	var buf = new Buffer(Buffer.byteLength(testStr, "ascii") + 1);
+	buf.fill(0);
+	buf.write(testStr, 0, "ascii");
+	var abuf = new Uint8Array(buf);
+	var view = new DataView(abuf.buffer);
+	test.equal(view.getStringNT(0, "ASCII"," ".charCodeAt(0)), testStr);
+	test.done();
+};
+
+
 module.exports.readUTF8Data = function(test){
 	test.expect(2);
 	var testStr = "What? £45!";

@@ -12,8 +12,8 @@ Adds the following methods to DataView:
 var dataview = new DataView(...);
 dataview.getString(byteOffset, optional byteLength, optional encoding)
 dataview.getStringData(byteOffset, optional byteLength, optional encoding)
-dataview.getStringNT(byteOffset, optional encoding)
-dataview.getStringDataNT(byteOffset, optional encoding)
+dataview.getStringNT(byteOffset, optional encoding, optional terminator)
+dataview.getStringDataNT(byteOffset, optional encoding, optional terminator)
 dataview.setString(byteOffset, value, optional encoding)
 dataview.setStringNT(byteOffset, value, optional encoding)
 dataview.stringByteLength(str, optional encoding) // instance method
@@ -31,10 +31,10 @@ This method will throw an Error if the provided `byteOffset` and `byteLength` wo
 ####`dataview.getStringData(byteOffset, optional byteLength, optional encoding)`
 Functionally identical to the method `getString`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string, and the `byteLength` property indicates the number of bytes that were consumed while reading it. Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.
 
-#### `dataview.getStringNT(byteOffset, optional encoding)`
-Returns the string represented by this DataView's buffer starting at `byteOffset` and reading until a null byte or the end of the buffer is encountered, interpreted using the specified encoding.
+#### `dataview.getStringNT(byteOffset, optional encoding, optional terminator)`
+Returns the string represented by this DataView's buffer starting at `byteOffset` and reading until a null byte (or the numeric char code specified as `terminator`) or the end of the buffer is encountered, interpreted using the specified encoding.
 
-#### `dataview.getStringDataNT(byteOffset, optional encoding)`
+#### `dataview.getStringDataNT(byteOffset, optional encoding, optional terminator)`
 Functionally identical to the method `getStringNT`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string (**not including** null byte), and the `byteLength` property indicates the number of bytes that were consumed while reading it (**including** the null byte). Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.
 
 #### `dataview.setString(byteOffset, value, optional encoding)`
