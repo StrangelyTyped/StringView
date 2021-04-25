@@ -138,7 +138,7 @@
 	};
 
 	var readString = {
-		"UTF-8": function(buf, byteOffset, bytesToRead){
+		"UTF-8": function(buf, byteOffset, bytesToRead, terminator){
 			var nullTerm = (typeof bytesToRead === "undefined");
 			var readPos = byteOffset || 0;
 			if(!nullTerm && readPos + bytesToRead > buf.byteLength){
@@ -151,7 +151,7 @@
 			while(readPos < buf.byteLength && (nullTerm || bytesToRead > (readPos - byteOffset))){
  				utf8ReadChar(charStruct, buf, readPos, nullTerm ? buf.byteLength - (readPos + byteOffset) : (bytesToRead - (readPos - byteOffset)));
  				readPos += charStruct.bytesRead;
- 				if(nullTerm && !charStruct.charVal){
+ 				if(nullTerm && (!charStruct.charVal || charStruct.charVal === terminator)){
  					break;
  				}
  				str += String.fromCharCode(charStruct.charVal);
@@ -161,7 +161,7 @@
 				byteLength: (readPos - byteOffset)
 			};
 		},
-		"ASCII": function(buf, byteOffset, bytesToRead){
+		"ASCII": function(buf, byteOffset, bytesToRead, terminator){
 			var str = "";
 			var byteLength = 0;
 			byteOffset = byteOffset || 0;
@@ -173,7 +173,7 @@
 			var charCode;
 			for(var i = 0; i < bytesToRead; i++){
 				charCode = buf.getUint8(i + byteOffset);
-				if(charCode === 0 && nullTerm){
+				if((charCode === 0 || charCode === terminator) && nullTerm){
 					break;
 				}
 				str += String.fromCharCode(charCode);
@@ -209,9 +209,9 @@
 		return readString[encoding](this, byteOffset, byteLength);
 	};
 	
-	var getStringNT = function(byteOffset, encoding){
+	var getStringNT = function(byteOffset, encoding, terminator){
 		encoding = checkEncoding(encoding);
-		return readString[encoding](this, byteOffset);
+		return readString[encoding](this, byteOffset, undefined, terminator);
 	};
 
 	Object.defineProperties(DataView.prototype, {
@@ -235,8 +235,8 @@
 			}
 		},
 		getStringNT: {
-			value: function(byteOffset, encoding){
-				return getStringNT.call(this, byteOffset, encoding).str;
+			value: function(byteOffset, encoding, terminator){
+				return getStringNT.call(this, byteOffset, encoding, terminator).str;
 			}
 		},
 		getStringDataNT: {

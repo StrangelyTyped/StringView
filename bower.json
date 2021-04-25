@@ -1,7 +1,7 @@
 {
   "name": "stringview",
   "main": "StringView.js",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "homepage": "https://github.com/StrangelyTyped/StringView",
   "authors": [
     "StrangelyTyped"
