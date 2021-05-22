@@ -151,7 +151,7 @@
 			while(readPos < buf.byteLength && (nullTerm || bytesToRead > (readPos - byteOffset))){
  				utf8ReadChar(charStruct, buf, readPos, nullTerm ? buf.byteLength - (readPos + byteOffset) : (bytesToRead - (readPos - byteOffset)));
  				readPos += charStruct.bytesRead;
- 				if(nullTerm && (!charStruct.charVal || charStruct.charVal === terminator)){
+ 				if(nullTerm && charStruct.charVal === terminator){
  					break;
  				}
  				str += String.fromCharCode(charStruct.charVal);
@@ -173,15 +173,15 @@
 			var charCode;
 			for(var i = 0; i < bytesToRead; i++){
 				charCode = buf.getUint8(i + byteOffset);
-				if((charCode === 0 || charCode === terminator) && nullTerm){
+				byteLength++;
+				if(nullTerm && charCode === terminator){
 					break;
 				}
 				str += String.fromCharCode(charCode);
-				byteLength++;
 			}
 			return {
 				str: str, 
-				byteLength: byteLength + (nullTerm ? 1 : 0)
+				byteLength: byteLength
 			};
 		}
 	};
@@ -209,7 +209,7 @@
 		return readString[encoding](this, byteOffset, byteLength);
 	};
 	
-	var getStringNT = function(byteOffset, encoding, terminator){
+	var getStringNT = function(byteOffset, encoding, terminator = 0){
 		encoding = checkEncoding(encoding);
 		return readString[encoding](this, byteOffset, undefined, terminator);
 	};

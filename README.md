@@ -28,6 +28,9 @@ Returns the string represented by this DataView's buffer starting at `byteOffset
 
 This method will throw an Error if the provided `byteOffset` and `byteLength` would cause access past the end of the buffer.
 
+If `encoding` is provided to `getString` then `byteLength` must also be provided.
+The `byteLength` defaults to the length of the buffer minus the `byteOffset` if not provided.
+
 #### `dataview.getStringData(byteOffset, optional byteLength, optional encoding)`
 Functionally identical to the method `getString`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string, and the `byteLength` property indicates the number of bytes that were consumed while reading it. Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.
 
@@ -40,8 +43,8 @@ Functionally identical to the method `getStringNT`, but returns an object with t
 #### `dataview.setString(byteOffset, value, optional encoding)`
 Writes the provided value into this DataView's buffer starting at `byteOffset`. The string will be encoded using the specified encoding. This function will return the number of bytes written to the string, which may be less than the number required to completely represent the string if `byteOffset` is too close to the end of the buffer. Note that this function may write a partial character at the end of the string in the case of truncation.
 
-#### `dataview.setStringNT(byteOffset, value, encoding)`
-Writes the provided value into this DataView's buffer starting at `byteOffset`. The string will be encoded using the specified encoding and terminated with a null byte. This function will return the number of bytes written to the string, which may be less than the number required to completely represent the string if `byteOffset` is too close to the end of the buffer. If the string was truncated it will still be terminated by a null byte. The null byte will be included the the return value. Note that this function may write a partial character at the end of the string in the case of truncation.
+#### `dataview.setStringNT(byteOffset, value, optional encoding)`
+Writes the provided value into this DataView's buffer starting at `byteOffset`. The string will be encoded using the specified encoding and terminated with a null byte. This function will return the number of bytes written to the string, which may be less than the number required to completely represent the string if `byteOffset` is too close to the end of the buffer. If the string was truncated it will still be terminated by a null byte. The null byte will be included the the return value. Note that this function may write a partial character at the end of the string in the case of truncation. Note that unlike getStringnt this method does not accept a custom terminator argument - if a custom terminator is required then use `setString` with the desired terminator appended to the string.
 
 #### `dataview.stringByteLength(str, optional encoding)`
 Calculates and returns the number of bytes required to completely represent the provided string using the specified encoding.
@@ -58,15 +61,14 @@ The decoder function should accept the following arguments:
 
 * `buf` - the DataView object to operate on
 * `byteOffset` - the offset in the data buffer to begin reading
-* `bytesToRead` - the number of bytes to read, or undefined for null terminated strings.
+* `bytesToRead` - the number of bytes to read, or undefined for terminated strings.
+* `terminator` - the char code for the terminator character (if bytesToRead is undefined)
 
 The decoder function should return an object with two properties - `str` being the decoded string, and `byteLength` representing the number of bytes consumed in reading the string.
+The string should not include the terminator character, but the character should be included in the byteLength value.
 
 ##### Encoder
 The encoder function should accept a single argument - the string to encode, and must return a JavaScript array of unsigned byte values representing that string in the specified encoding.
-
-If `encoding` is provided to `getString` then `byteLength` must also be provided.
-The `byteLength` defaults to the length of the buffer minus the `byteOffset` if not provided.
 
 ## Supported Encodings
 The following encodings are supported by default:
