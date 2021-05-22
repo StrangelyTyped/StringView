@@ -23,12 +23,12 @@ DataView.addStringCodec(encoding, decoder, encoder) //Static method
 All methods assume a default encoding of UTF-8 unless an encoding is specified.
 
 ### Instance Methods
-####`dataview.getString(byteOffset, optional byteLength, optional encoding)`
+#### `dataview.getString(byteOffset, optional byteLength, optional encoding)`
 Returns the string represented by this DataView's buffer starting at `byteOffset`. The string will be made from `byteLength` bytes (defaulting to the length of the buffer minus `byteOffset` if not specified) interpreted using the specified encoding. 
 
 This method will throw an Error if the provided `byteOffset` and `byteLength` would cause access past the end of the buffer.
 
-####`dataview.getStringData(byteOffset, optional byteLength, optional encoding)`
+#### `dataview.getStringData(byteOffset, optional byteLength, optional encoding)`
 Functionally identical to the method `getString`, but returns an object with two properties: `str`, and `byteLength` - the `str` property is the read string, and the `byteLength` property indicates the number of bytes that were consumed while reading it. Note that if decoding issues are encountered this byte length value may differ from a subsequently calculated byte length for the returned string.
 
 #### `dataview.getStringNT(byteOffset, optional encoding, optional terminator)`
