@@ -1,4 +1,5 @@
 "use strict";
+const t = require("tap");
 require("./StringView.js");
 
 var replacementChar = 0xFFFD;
@@ -32,41 +33,37 @@ var runBasicUtf8WriteTest = function(test, strToTest, offset, bufferLen, doNt){
 	test.equal(abuf.toString("utf8", offset, end), strToTest);
 };
 
-module.exports.readUtf8WithAscii = function(test){
-	test.expect(1);
+t.test('readUtf8WithAscii', function(test){
 	var testString = "This is a test!";
 	runBasicUtf8ReadTest(testString, testString, test);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readUtf8 = function(test){
-	test.expect(1);
+t.test('readUtf8', function(test){
 	var testString = "My 'something' cost £42 while my 'other!' cost €45 ";
 	runBasicUtf8ReadTest(testString, testString, test);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.testOffset = function(test){
-	test.expect(1);
+t.test('testOffset', function(test){
 	var testStr = "What? £45!";
 	var offset = 5;
 	var buf = new Buffer(Buffer.byteLength(testStr) + offset);
 	buf.fill(65);
 	buf.write(testStr, offset);
 	runBasicUtf8ReadTest(buf, testStr, test, offset);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.testLongBuffer = function(test){
-	test.expect(1);
+t.test('testLongBuffer', function(test){
 	var testStr = "What? £45!";
 	var offset = 5;
 	var buf = new Buffer(Buffer.byteLength(testStr) + offset);
 	buf.fill(65);
 	buf.write(testStr, 0);
 	runBasicUtf8ReadTest(buf, testStr, test);
-	test.done();
-};
+	test.end();
+});
 
 var testMalformedUtf8 = function(test, buf){
 	var abuf = new Uint8Array(buf);
@@ -75,36 +72,31 @@ var testMalformedUtf8 = function(test, buf){
 	test.equal(view.getString(0, buf.length), testStr);
 };
 
-module.exports.readOverlongUtf8 = function(test){
-	test.expect(1);
+t.test('readOverlongUtf8', function(test){
 	var buf = new Buffer([65, 66, 67, 32, 0xF0, 0x82, 0x82, 0xAC, 68, 69]);
 	testMalformedUtf8(test, buf);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readMalformedLongCharUtf8 = function(test){
-	test.expect(1);
+t.test('readMalformedLongCharUtf8', function(test){
 	var buf = new Buffer([65, 66, 67, 32, 0xF8, 0x82, 0x82, 0xAC, 68, 69]);
 	testMalformedUtf8(test, buf);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readMalformedShortCharUtf8 = function(test){
-	test.expect(1);
+t.test('readMalformedShortCharUtf8', function(test){
 	var buf = new Buffer([65, 66, 67, 32, 0xE0, 0x82, 0x82, 0xAC, 68, 69]);
 	testMalformedUtf8(test, buf);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readHighCodepointUtf8 = function(test){
-	test.expect(1);
+t.test('readHighCodepointUtf8', function(test){
 	var buf = new Buffer([65, 66, 67, 32, 0xF7, 0xBF, 0xBF, 0xBF, 68, 69]);
 	testMalformedUtf8(test, buf);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readUTf8NullTerm = function(test){
-	test.expect(1);
+t.test('readUTf8NullTerm', function(test){
 	var testStr = "What? £45!";
 	var buf = new Buffer(Buffer.byteLength(testStr) + 1);
 	buf.fill(0);
@@ -112,11 +104,10 @@ module.exports.readUTf8NullTerm = function(test){
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.equal(view.getStringNT(0), testStr);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readAsciiNullTerm = function(test){
-	test.expect(1);
+t.test('readAsciiNullTerm', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(Buffer.byteLength(testStr, "ascii") + 1);
 	buf.fill(0);
@@ -124,11 +115,10 @@ module.exports.readAsciiNullTerm = function(test){
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.equal(view.getStringNT(0, "ASCII"), testStr);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readUTf8CustomTerm = function(test){
-	test.expect(1);
+t.test('readUTf8CustomTerm', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(Buffer.byteLength(testStr) + 1);
 	buf.fill(0);
@@ -136,11 +126,10 @@ module.exports.readUTf8CustomTerm = function(test){
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.equal(view.getStringNT(0, "UTF-8", " ".charCodeAt(0)), "What?");
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readAsciiCustomTerm = function(test){
-	test.expect(1);
+t.test('readAsciiCustomTerm', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(Buffer.byteLength(testStr, "ascii") + 1);
 	buf.fill(0);
@@ -148,12 +137,11 @@ module.exports.readAsciiCustomTerm = function(test){
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.equal(view.getStringNT(0, "ASCII", " ".charCodeAt(0)), "What?");
-	test.done();
-};
+	test.end();
+});
 
 
-module.exports.readUTF8Data = function(test){
-	test.expect(2);
+t.test('readUTF8Data', function(test){
 	var testStr = "What? £45!";
 	var buf = new Buffer(Buffer.byteLength(testStr));
 	buf.fill(0);
@@ -163,11 +151,10 @@ module.exports.readUTF8Data = function(test){
 	var retData = view.getStringData(0, buf.length);
 	test.equal(retData.str, testStr);
 	test.equal(retData.byteLength, buf.length);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readASCIIData = function(test){
-	test.expect(2);
+t.test('readASCIIData', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(Buffer.byteLength(testStr, "ascii"));
 	buf.fill(0);
@@ -177,11 +164,10 @@ module.exports.readASCIIData = function(test){
 	var retData = view.getStringData(0, buf.length, "ASCII");
 	test.equal(retData.str, testStr);
 	test.equal(retData.byteLength, buf.length);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readUTf8NullTermData = function(test){
-	test.expect(2);
+t.test('readUTf8NullTermData', function(test){
 	var testStr = "What? £45!";
 	var buf = new Buffer(Buffer.byteLength(testStr) + 1);
 	buf.fill(0);
@@ -191,11 +177,10 @@ module.exports.readUTf8NullTermData = function(test){
 	var retData = view.getStringDataNT(0);
 	test.equal(retData.str, testStr);
 	test.equal(retData.byteLength, buf.length);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readAsciiNullTermData = function(test){
-	test.expect(2);
+t.test('readAsciiNullTermData', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(Buffer.byteLength(testStr, "ascii") + 1);
 	buf.fill(0);
@@ -205,68 +190,59 @@ module.exports.readAsciiNullTermData = function(test){
 	var retData = view.getStringDataNT(0, "ASCII");
 	test.equal(retData.str, testStr);
 	test.equal(retData.byteLength, buf.length);
-	test.done();
-};
+	test.end();
+});
 
-
-module.exports.byteLength = function(test){
+t.test('byteLength', function(test){
 	var testStrs = ["Ascii String","What? £45! No, €45.","£ @ €"];
-	test.expect(testStrs.length);
 	testStrs.forEach(function(val){
 		test.equal(DataView.stringByteLength(val), Buffer.byteLength(val));
 	});
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readAscii = function(test){
-	test.expect(1);
+t.test('readAscii', function(test){
 	var testStr = "What? $45!";
 	var buf = new Buffer(testStr, "ascii");
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.equal(view.getString(0, buf.length, "ASCII"), testStr);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.readAsciiWithUtf8 = function(test){
-	test.expect(1);
+t.test('readAsciiWithUtf8', function(test){
 	var testStr = "What? £45!";
 	var buf = new Buffer(testStr);
 	var abuf = new Uint8Array(buf);
 	var view = new DataView(abuf.buffer);
 	test.notEqual(view.getString(0, buf.length, "ASCII"), testStr);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeUtf8AndAscii = function(test){
+t.test('writeUtf8AndAscii', function(test){
 	var strs = ["Basic Ascii!", "Expensive UTF-8 - £4", "€5 - very £ expensive UTF-8"];
-	test.expect(strs.length);
 	strs.forEach(function(val){
 		runBasicUtf8WriteTest(test, val);
 	});
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeOffset = function(test){
-	test.expect(1);
+t.test('writeOffset', function(test){
 	runBasicUtf8WriteTest(test, "What? £45!", 5);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeLongBuffer = function(test){
-	test.expect(1);
+t.test('writeLongBuffer', function(test){
 	runBasicUtf8WriteTest(test, "What? £45!", 5, 100);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeLongBufferNT = function(test){
-	test.expect(1);
+t.test('writeLongBufferNT', function(test){
 	runBasicUtf8WriteTest(test, "What? £45!", 5, 100, true);
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeReturnVal = function(test){
-	test.expect(3);
+t.test('writeReturnVal', function(test){
 	var testStr = "That's a lot of money / tests";
 	var testStrLen = Buffer.byteLength(testStr);
 	
@@ -285,11 +261,10 @@ module.exports.writeReturnVal = function(test){
 	var bytesWritten3 = buf2.setString(offset, testStr);	
 	test.equal(bytesWritten3, bufLen - offset);
 
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeReturnValNT = function(test){
-	test.expect(3);
+t.test('writeReturnValNT', function(test){
 	var testStr = "That's a lot of money / tests";
 	var testStrLen = Buffer.byteLength(testStr) + 1;
 	
@@ -308,11 +283,10 @@ module.exports.writeReturnValNT = function(test){
 	var bytesWritten3 = buf2.setStringNT(offset, testStr);	
 	test.equal(bytesWritten3, bufLen - offset);
 
-	test.done();
-};
+	test.end();
+});
 
-module.exports.writeNullTermByte = function(test){
-	test.expect(4);
+t.test('writeNullTermByte', function(test){
 	var testStr = "ABCDEFG";
 	
 	var ab1 = new ArrayBuffer(Buffer.byteLength(testStr) + 1);
@@ -329,5 +303,5 @@ module.exports.writeNullTermByte = function(test){
 	test.equal(abuf2[abuf2.length - 2], "D".charCodeAt(0));
 	test.equal(abuf2[abuf2.length - 1], 0);
 
-	test.done();
-};
+	test.end();
+});

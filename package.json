@@ -4,7 +4,7 @@
   "description": "DataView extension for reading/writing strings",
   "main": "StringView.js",
   "scripts": {
-    "test": "nodeunit tests.js"
+    "test": "tap --no-check-coverage"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/StrangelyTyped/StringView",
   "devDependencies": {
-    "nodeunit": "~0.9.0"
+    "tap": "^15.0.9"
   }
 }
