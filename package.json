@@ -1,6 +1,6 @@
 {
   "name": "stringview",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "DataView extension for reading/writing strings",
   "main": "StringView.js",
   "scripts": {
