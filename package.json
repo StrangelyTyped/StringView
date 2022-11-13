@@ -1,10 +1,10 @@
 {
   "name": "stringview",
-  "version": "2.1.1",
-  "description": "DataView extension for reading/writing strings",
-  "main": "StringView.js",
+  "version": "3.0.0",
+  "description": "DataView helper for reading/writing strings",
+  "main": "StringView.mjs",
   "scripts": {
-    "test": "tap --no-check-coverage"
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/StrangelyTyped/StringView/issues"
   },
-  "homepage": "https://github.com/StrangelyTyped/StringView",
-  "devDependencies": {
-    "tap": "^15.0.9"
-  }
+  "homepage": "https://github.com/StrangelyTyped/StringView"
 }
